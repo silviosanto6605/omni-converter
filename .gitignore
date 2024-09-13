@@ -1,0 +1,7 @@
+__pycache__/
+TODO.txt
+venv/
+test/
+.env
+uploads/
+.vscode/
