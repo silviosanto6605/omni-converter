@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Converter</title>
+    <!-- Link to external stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+
+    <h1>Welcome to the Universal Converter</h1>
+    <p>Select a file type to convert:</p>
+
+    <div class="conversion-options">
+        <!-- Documents Conversion -->
+        <div class="option docs">
+            <a href="{{ url_for('docs_conversion') }}">
+                <i class="fas fa-file-alt"></i>
+                <h2>Convert Documents</h2>
+            </a>
+        </div>
+
+        <!-- Images Conversion -->
+        <div class="option images">
+            <a href="{{ url_for('image_conversion') }}">
+                <i class="fas fa-image"></i>
+                <h2>Convert Images</h2>
+            </a>
+        </div>
+
+        <!-- Videos Conversion -->
+        <div class="option videos">
+            <a href="{{ url_for('video_conversion') }}">
+                <i class="fas fa-video"></i>
+                <h2>Convert Videos</h2>
+            </a>
+        </div>
+
+        <!-- Audios Conversion -->
+        <div class="option audios">
+            <a href="{{ url_for('audio_conversion') }}">
+                <i class="fas fa-music"></i>
+                <h2>Convert Audios</h2>
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

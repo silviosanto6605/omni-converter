@@ -13,15 +13,15 @@ from converter import Converter
 import dotenv
 import shutil
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path="/static")
 
 dotenv.load_dotenv(".env")
 
-UPLOAD_FOLDER = "uploads"
+UPLOAD_FOLDER = "temp"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
-ALLOWED_TEXT_TO_PDF_EXTENSIONS = {
+ALLOWED_EXTENSIONS = {
     "doc",
     "docx",
     "odt",
@@ -29,7 +29,7 @@ ALLOWED_TEXT_TO_PDF_EXTENSIONS = {
     "html",
     "rtf",
     "txt",
-}  # Estensioni consentite
+}
 
 
 # Controlla se il percorso di upload esiste, altrimenti lo crea
@@ -39,21 +39,48 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 # Controllo se l'estensione del file è consentita
 def allowed_file(filename):
-    return (
-        "." in filename
-        and filename.rsplit(".", 1)[1].lower() in ALLOWED_TEXT_TO_PDF_EXTENSIONS
-    )
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-# Route per visualizzare il form di upload
+# Route per visualizzare le varie pagine
 @app.route("/")
-def upload_form():
-    return render_template("index.html")
+def root():
+    return redirect(url_for("homepage"))
 
 
-# Route per caricare e convertire il file
-@app.route("/upload", methods=["POST"])
-def upload_and_convert_file():
+@app.route("/convert/")
+def homepage():
+    clean()
+    return render_template("convert.html")
+
+
+@app.route("/convert/image", methods=["GET"])
+def image_conversion():
+    clean()
+    return render_template("images.html")
+
+
+@app.route("/convert/video", methods=["GET"])
+def video_conversion():
+    clean()
+    return render_template("video.html")
+
+
+@app.route("/convert/audio", methods=["GET"])
+def audio_conversion():
+    clean()
+    return render_template("audio.html")
+
+
+@app.route("/convert/docs", methods=["GET"])
+def docs_conversion():
+    clean()
+    return render_template("docs.html")
+
+
+# Convert the uploaded document to PDF
+@app.route("/convert/docs", methods=["POST"])
+def convert_docs():
     try:
         if "file" not in request.files:
             return redirect(url_for("error_page", message="No file part"))
@@ -88,13 +115,15 @@ def upload_and_convert_file():
             return redirect(url_for("download_file", filename=pdf_filename))
 
         return redirect(url_for("error_page", message="Invalid file type"))
-
+    
     except Exception as e:
         return redirect(url_for("error_page", message=str(e)))
+    
+    
 
 
-# Route per scaricare il file convertito
-@app.route("/uploads/<filename>")
+# Route to download the converted file
+@app.route("/download/<filename>")
 def download_file(filename):
     try:
         return send_from_directory(
@@ -103,21 +132,19 @@ def download_file(filename):
     except Exception as e:
         return redirect(url_for("error_page", message=str(e)))
 
-    finally:
-        clean()
 
-
+# Clean file remnants
 def clean():
     try:
         shutil.rmtree(app.config["UPLOAD_FOLDER"])
         os.makedirs(app.config["UPLOAD_FOLDER"])
-        return render_template("index.html")
+        return render_template("convert.html")
 
     except FileNotFoundError:
-        return redirect(url_for("error_page", message="No files to delete"))
+        pass
 
 
-# Route per la pagina di errore
+# Route for error page
 @app.route("/error")
 def error_page():
     error_message = request.args.get("message", "An unknown error occurred.")

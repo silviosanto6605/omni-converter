@@ -2,7 +2,6 @@ import subprocess
 import os
 
 class Converter:
-    @staticmethod
     def convert_to_pdf(inputfile, outputfiledir):
         try:
             # Usa una lista di argomenti invece di una stringa
@@ -21,3 +20,9 @@ class Converter:
             return f"Conversion failed: {str(e)}"
         except FileNotFoundError:
             return "LibreOffice (soffice) not found. Please ensure it is installed and in your system's PATH."
+
+
+    #def convert_image(inputfile,outputfiledir,format1,format2):
+        
+        
+        

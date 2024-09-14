@@ -3,5 +3,5 @@ TODO.txt
 venv/
 test/
 .env
-uploads/
+temp/
 .vscode/

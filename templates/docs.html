@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Converter</title>
+    <title>Docs Converter</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+    </style>
 </head>
 <body>
-    <h1>Convert a File to PDF</h1>
+    <!-- Home button with a house icon -->
+    <a class="home-button" href="{{ url_for('homepage') }}">
+        <i class="fas fa-home"></i> Home
+    </a>
+    <br>
+    <br>
+    <br>
+    <h1>Convert a document to PDF</h1>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <ul>
@@ -18,7 +29,7 @@
     {% endwith %}
 
     <!-- Form di caricamento file -->
-    <form action="/upload" method="POST" enctype="multipart/form-data">
+    <form action="{{ url_for('docs_conversion') }}" method="POST" enctype="multipart/form-data">
         <input type="file" name="file">
         <input type="submit" value="Upload and Convert">
     </form>
@@ -26,7 +37,6 @@
     <br>
     <br>
     <br>
-    
 
 </body>
 </html>
