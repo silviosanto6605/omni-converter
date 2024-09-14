@@ -12,6 +12,7 @@ from werkzeug.utils import secure_filename
 from converter import Converter
 import dotenv
 import shutil
+import pathlib
 
 app = Flask(__name__, static_url_path="/static")
 
@@ -21,7 +22,7 @@ UPLOAD_FOLDER = "temp"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
-ALLOWED_EXTENSIONS = {
+ALLOWED_DOCS_EXTENSIONS = {
     "doc",
     "docx",
     "odt",
@@ -31,6 +32,8 @@ ALLOWED_EXTENSIONS = {
     "txt",
 }
 
+ALLOWED_IMG_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "bmp", "tiff","webp"}
+
 
 # Controlla se il percorso di upload esiste, altrimenti lo crea
 if not os.path.exists(UPLOAD_FOLDER):
@@ -38,8 +41,8 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 
 # Controllo se l'estensione del file è consentita
-def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+def allowed_file(filename, allowed_extensions):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in allowed_extensions
 
 
 # Route per visualizzare le varie pagine
@@ -92,7 +95,7 @@ def convert_docs():
             return redirect(url_for("error_page", message="No selected file"))
 
         # Verifica se l'estensione è consentita
-        if file and allowed_file(file.filename):
+        if file and allowed_file(file.filename, ALLOWED_DOCS_EXTENSIONS):
             filename = secure_filename(file.filename)
             input_filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
@@ -115,11 +118,49 @@ def convert_docs():
             return redirect(url_for("download_file", filename=pdf_filename))
 
         return redirect(url_for("error_page", message="Invalid file type"))
-    
+
+    except Exception as e:
+        return redirect(url_for("error_page", message=str(e)))
+
+
+@app.route("/convert/image", methods=["POST"])
+def convert_image():
+    try:
+        if "file" not in request.files:
+            return redirect(url_for("error_page", message="No file part"))
+
+        file = request.files["file"]
+
+        # Verifica se è stato selezionato un file
+        if file.filename == "":
+            return redirect(url_for("error_page", message="No selected file"))
+
+        # Verifica se l'estensione è consentita
+        if file and allowed_file(file.filename, ALLOWED_IMG_EXTENSIONS):
+            filename = secure_filename(file.filename)
+            input_filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            file.save(input_filepath)
+            outputfiledir = app.config["UPLOAD_FOLDER"]
+            
+            error = Converter.convert_image(input_filepath,filename.rsplit(".", 1)[0]+"."+request.form.get("format"),outputfiledir)
+
+            if error:
+                return redirect(
+                    url_for("error_page", message=f"Error during conversion: {error}")
+                )
+
+
+            # Reindirizza alla pagina di download
+            return redirect(url_for("download_file", filename=filename.rsplit(".", 1)[0]+"."+request.form.get("format")))
+
+        return redirect(url_for("error_page", message="Invalid file type"))
+
     except Exception as e:
         return redirect(url_for("error_page", message=str(e)))
     
-    
+
+
+
 
 
 # Route to download the converted file

@@ -1,4 +1,5 @@
 import subprocess
+from PIL import Image 
 import os
 
 class Converter:
@@ -22,7 +23,15 @@ class Converter:
             return "LibreOffice (soffice) not found. Please ensure it is installed and in your system's PATH."
 
 
-    #def convert_image(inputfile,outputfiledir,format1,format2):
+    def convert_image(inputfiledir,outfilename,outfiledir):
+        try:
+            with Image.open(inputfiledir) as img:
+                img.save(os.path.join(outfiledir,outfilename))
+                return None
+                
+        except Exception as e:
+            return f"Conversion failed: {str(e)}"
+        
         
         
         
