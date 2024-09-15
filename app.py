@@ -20,7 +20,13 @@ dotenv.load_dotenv(".env")
 
 UPLOAD_FOLDER = "temp"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+
+if os.environ.get('FLASK_ENV') == 'development':
+    app.config['DEBUG'] = True
+else:
+    app.config['DEBUG'] = False
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+
 
 ALLOWED_DOCS_EXTENSIONS = {"doc","docx","odt","pptx","html","rtf","txt"}
 ALLOWED_IMG_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "bmp", "tiff","webp"}
@@ -262,4 +268,4 @@ def error_page():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run()
