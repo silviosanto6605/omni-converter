@@ -22,17 +22,9 @@ UPLOAD_FOLDER = "temp"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
-ALLOWED_DOCS_EXTENSIONS = {
-    "doc",
-    "docx",
-    "odt",
-    "pptx",
-    "html",
-    "rtf",
-    "txt",
-}
-
+ALLOWED_DOCS_EXTENSIONS = {"doc","docx","odt","pptx","html","rtf","txt"}
 ALLOWED_IMG_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "bmp", "tiff","webp"}
+ALLOWED_VIDEO_EXTENSIONS = {"mp4", "avi", "mov", "wmv", "flv", "mkv","webm"}
 
 
 # Controlla se il percorso di upload esiste, altrimenti lo crea
@@ -57,6 +49,12 @@ def homepage():
     return render_template("convert.html")
 
 
+@app.route("/convert/docs", methods=["GET"])
+def docs_conversion():
+    clean()
+    return render_template("docs.html")
+
+
 @app.route("/convert/image", methods=["GET"])
 def image_conversion():
     clean()
@@ -75,10 +73,8 @@ def audio_conversion():
     return render_template("audio.html")
 
 
-@app.route("/convert/docs", methods=["GET"])
-def docs_conversion():
-    clean()
-    return render_template("docs.html")
+
+
 
 
 # Convert the uploaded document to PDF
@@ -157,9 +153,44 @@ def convert_image():
 
     except Exception as e:
         return redirect(url_for("error_page", message=str(e)))
+   
+   
+@app.route("/convert/video", methods=["POST"])
+def convert_video(): 
+
+    try:
+            if "file" not in request.files:
+                return redirect(url_for("error_page", message="No file part"))
+
+            file = request.files["file"]
+
+            # Verifica se è stato selezionato un file
+            if file.filename == "":
+                return redirect(url_for("error_page", message="No selected file"))
+
+            # Verifica se l'estensione è consentita
+            if file and allowed_file(file.filename, ALLOWED_VIDEO_EXTENSIONS):
+                filename = secure_filename(file.filename)
+                input_filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+                file.save(input_filepath)
+                outputfiledir = app.config["UPLOAD_FOLDER"]
+
+                error = Converter.convert_video(input_filepath,filename.rsplit(".", 1)[0]+"."+request.form.get("format"),outputfiledir)
+
+                if error:
+                    return redirect(
+                        url_for("error_page", message=f"Error during conversion: {error}")
+                    )
+
+
+                # Reindirizza alla pagina di download
+                return redirect(url_for("download_file", filename=filename.rsplit(".", 1)[0]+"."+request.form.get("format")))
+
+            return redirect(url_for("error_page", message="Invalid file type"))
+
+    except Exception as e:
+        return redirect(url_for("error_page", message=str(e)))
     
-
-
 
 
 
@@ -190,3 +221,8 @@ def clean():
 def error_page():
     error_message = request.args.get("message", "An unknown error occurred.")
     return render_template("error.html", error_message=error_message)
+
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0")

@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Image Converter</title>
 </head>
 <body>
+    <!-- Home button with a house icon -->
+    <a class="home-button" href="{{ url_for('homepage') }}">
+        <i class="fas fa-home"></i> Home
+    </a>
+    <br>
+    <br>
+    <br>
     <h1>Convert an Image</h1>
     {% with messages = get_flashed_messages() %}
         {% if messages %}

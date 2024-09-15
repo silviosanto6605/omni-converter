@@ -23,14 +23,32 @@ class Converter:
             return "LibreOffice (soffice) not found. Please ensure it is installed and in your system's PATH."
 
 
-    def convert_image(inputfiledir,outfilename,outfiledir):
+    def convert_image(inputfilepath,outfilename,outfiledir):
         try:
-            with Image.open(inputfiledir) as img:
+            with Image.open(inputfilepath) as img:
                 img.save(os.path.join(outfiledir,outfilename))
                 return None
                 
         except Exception as e:
             return f"Conversion failed: {str(e)}"
+        
+        
+    def convert_video(inputfilepath,outfilename,outfiledir):
+        try:
+            
+            command = [
+                "ffmpeg",
+                "-i",
+                inputfilepath,
+                os.path.join(outfiledir,outfilename)
+                
+            ]
+            subprocess.run(command, check=True)
+            return None
+            
+        except subprocess.CalledProcessError as e:
+            return f"Conversion failed: {str(e)}"
+        
         
         
         
