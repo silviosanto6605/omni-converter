@@ -4,45 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Image Converter</title>
+    <title>Video Converter</title>
 </head>
 <body>
-    <!-- Home button with a house icon -->
-    <a class="home-button" href="{{ url_for('homepage') }}">
-        <i class="fas fa-home"></i> Home
-    </a>
-    <br>
-    <br>
-    <br>
-    <h1>Convert a video</h1>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-
-    <!-- Form di caricamento file -->
-    <form action="{{url_for('convert_video')}}" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <label for="format">Select output format:</label>
-        <select name="format" id="format">
-            <option value="mp4">mp4</option>
-            <option value="avi">avi</option>
-            <option value="mov">mov</option>
-            <option value="wmv">wmv</option>
-            <option value="flv">flv</option>
-            <option value="mkv">mkv</option>
-            <option value="webm">webm</option>
-        </select>
-        <input type="submit" value="Upload and Convert">
-    </form>
-
-    <br>
-    <br>
-    <br>
+    <div class="container">
+        <a class="home-button" href="{{ url_for('homepage') }}">
+            <i class="fas fa-home"></i> Home
+        </a>
+        <h1><i class="fas fa-video"></i> Convert a Video</h1>
+        <div class="converter-box">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <form action="{{url_for('convert_video')}}" method="POST" enctype="multipart/form-data">
+                <div class="file-input-wrapper">
+                    <button class="btn"><i class="fas fa-upload"></i> <span id="file-name">Choose a video file</span></button>
+                    <input type="file" name="file" id="file-input" accept=".mp4,.avi,.mov,.wmv,.flv,.mkv,.webm">
+                </div>
+                <label for="format"><i class="fas fa-file-export"></i> Select output format:</label>
+                <select name="format" id="format">
+                    <option value="mp4">MP4</option>
+                    <option value="avi">AVI</option>
+                    <option value="mov">MOV</option>
+                    <option value="wmv">WMV</option>
+                    <option value="flv">FLV</option>
+                    <option value="mkv">MKV</option>
+                    <option value="webm">WebM</option>
+                </select>
+                <input type="submit" value="Upload and Convert">
+            </form>
+        </div>
+    </div>
 </body>
 </html>

@@ -4,45 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Image Converter</title>
+    <title>Video Converter</title>
 </head>
 <body>
-    <!-- Home button with a house icon -->
-    <a class="home-button" href="{{ url_for('homepage') }}">
-        <i class="fas fa-home"></i> Home
-    </a>
-    <br>
-    <br>
-    <br>
-    <h1>Convert an audio file</h1>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-
-    <!-- Form di caricamento file -->
-    <form action="{{url_for('convert_audio')}}" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <label for="format">Select output format:</label>
-        <select name="format" id="format">
-            <option value="aac">aac</option>
-            <option value="flac">flac</option>
-            <option value="mp3">mp3</option>
-            <option value="opus">opus</option>
-            <option value="wav">wav</option>
-            <option value="mkv">mkv</option>
-            <option value="webm">webm</option>
-        </select>
-        <input type="submit" value="Upload and Convert">
-    </form>
-
-    <br>
-    <br>
-    <br>
+    <div class="container">
+        <a class="home-button" href="{{ url_for('homepage') }}">
+            <i class="fas fa-home"></i> Home
+        </a>
+        <h1><i class="fas fa-file-audio"></i> Convert an Audio</h1>
+        <div class="converter-box">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <form action="{{url_for('convert_audio')}}" method="POST" enctype="multipart/form-data">
+                <div class="file-input-wrapper">
+                    <button class="btn"><i class="fas fa-upload"></i> <span id="file-name">Choose an audio file</span></button>
+                    <input type="file" name="file" accept=".aac,.flac,.mp3,.opus,.wav,.mkv,.webm" id="file-input">
+                </div>
+                <label for="format"><i class="fas fa-file-audio"></i> Select output format:</label>
+                <select name="format" id="format">
+                    <option value="aac">AAC</option>
+                    <option value="flac">FLAC</option>
+                    <option value="mp3">MP3</option>
+                    <option value="opus">Opus</option>
+                    <option value="wav">WAV</option>
+                    <option value="mkv">MKV</option>
+                    <option value="webm">WebM</option>
+                </select>
+                <input type="submit" value="Upload and Convert">
+            </form>
+        </div>
+    </div>
 </body>
 </html>

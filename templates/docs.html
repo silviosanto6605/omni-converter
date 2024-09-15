@@ -7,33 +7,33 @@
     <title>Docs Converter</title>
 </head>
 <body>
-    <!-- Home button with a house icon -->
-    <a class="home-button" href="{{ url_for('homepage') }}">
-        <i class="fas fa-home"></i> Home
-    </a>
-    <br>
-    <br>
-    <br>
-    <h1>Convert a document to PDF</h1>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-
-    <!-- Form di caricamento file -->
-    <form action="{{ url_for('docs_conversion') }}" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Upload and Convert">
-    </form>
-
-    <br>
-    <br>
-    <br>
-
+    <div class="container">
+        <a class="home-button" href="{{ url_for('homepage') }}">
+            <i class="fas fa-home"></i> Home
+        </a>
+        <h1><i class="fas fa-file-alt"></i> Convert a Document to PDF</h1>
+        <div class="converter-box">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flash-messages">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <form action="{{ url_for('docs_conversion') }}" method="POST" enctype="multipart/form-data">
+                <div class="file-input-wrapper">
+                    <button class="btn"><i class="fas fa-upload"></i> <span id="file-name">Choose a document file</span></button>
+                    <input type="file" name="file" id="file-input" accept=".pdf,.doc,.docx">
+                </div>
+                <label for="format"><i class="fas fa-file-export"></i> Select output format:</label>
+                <select name="format" id="format">
+                    <option value="pdf">PDF</option>
+                </select>
+                <input type="submit" value="Upload and Convert">
+            </form>
+        </div>
+    </div>
 </body>
 </html>
