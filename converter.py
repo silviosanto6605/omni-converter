@@ -48,8 +48,22 @@ class Converter:
             
         except subprocess.CalledProcessError as e:
             return f"Conversion failed: {str(e)}"
+           
         
-        
-        
-        
+    def convert_audio(inputfilepath,outfilename,outfiledir):
+        try:
+            
+            command = [
+                "ffmpeg",
+                "-i",
+                inputfilepath,
+                os.path.join(outfiledir,outfilename)
+                
+            ]
+            subprocess.run(command, check=True)
+            return None
+            
+        except subprocess.CalledProcessError as e:
+            return f"Conversion failed: {str(e)}"
+         
         

@@ -25,6 +25,7 @@ app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 ALLOWED_DOCS_EXTENSIONS = {"doc","docx","odt","pptx","html","rtf","txt"}
 ALLOWED_IMG_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "bmp", "tiff","webp"}
 ALLOWED_VIDEO_EXTENSIONS = {"mp4", "avi", "mov", "wmv", "flv", "mkv","webm"}
+ALLOWED_AUDIO_EXTENSIONS = {"aac","flac","mp3","opus","wav","mkv","webm"}
 
 
 # Controlla se il percorso di upload esiste, altrimenti lo crea
@@ -170,6 +171,42 @@ def convert_video():
 
             # Verifica se l'estensione è consentita
             if file and allowed_file(file.filename, ALLOWED_VIDEO_EXTENSIONS):
+                filename = secure_filename(file.filename)
+                input_filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+                file.save(input_filepath)
+                outputfiledir = app.config["UPLOAD_FOLDER"]
+
+                error = Converter.convert_video(input_filepath,filename.rsplit(".", 1)[0]+"."+request.form.get("format"),outputfiledir)
+
+                if error:
+                    return redirect(
+                        url_for("error_page", message=f"Error during conversion: {error}")
+                    )
+
+
+                # Reindirizza alla pagina di download
+                return redirect(url_for("download_file", filename=filename.rsplit(".", 1)[0]+"."+request.form.get("format")))
+
+            return redirect(url_for("error_page", message="Invalid file type"))
+
+    except Exception as e:
+        return redirect(url_for("error_page", message=str(e)))
+    
+@app.route("/convert/audio", methods=["POST"])
+def convert_audio(): 
+
+    try:
+            if "file" not in request.files:
+                return redirect(url_for("error_page", message="No file part"))
+
+            file = request.files["file"]
+
+            # Verifica se è stato selezionato un file
+            if file.filename == "":
+                return redirect(url_for("error_page", message="No selected file"))
+
+            # Verifica se l'estensione è consentita
+            if file and allowed_file(file.filename, ALLOWED_AUDIO_EXTENSIONS):
                 filename = secure_filename(file.filename)
                 input_filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
                 file.save(input_filepath)
