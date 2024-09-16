@@ -10,22 +10,23 @@ from flask import (
 )
 from werkzeug.utils import secure_filename
 from converter import Converter
-import dotenv
 import shutil
-import pathlib
 
-app = Flask(__name__, static_url_path="/static")
 
-dotenv.load_dotenv(".env")
 
 UPLOAD_FOLDER = "temp"
+FLASK_ENV = "production"
+
+
+app = Flask(__name__, static_url_path="/static")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-if os.environ.get('FLASK_ENV') == 'development':
+
+if 'FLASK_ENV' == 'development':
     app.config['DEBUG'] = True
-else:
+elif 'FLASK_ENV' == 'production':
     app.config['DEBUG'] = False
-    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+
 
 
 ALLOWED_DOCS_EXTENSIONS = {"doc","docx","odt","pptx","html","rtf","txt"}
