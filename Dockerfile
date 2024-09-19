@@ -4,7 +4,7 @@ FROM python:3.10-slim
 RUN mkdir /app
 # Installare LibreOffice e FFmpeg
 RUN apt-get update && \
-    apt-get install -y libreoffice ffmpeg && \
+    apt-get install -y libreoffice ffmpeg gcc zlib1g-dev libjpeg-dev  && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

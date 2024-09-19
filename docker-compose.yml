@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   default:
+    container_name: omni-container
     build: .
     ports:
       - "8080:8080"
